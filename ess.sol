@@ -20,20 +20,24 @@ contract ESSToken is ERC20("Essential Shelf", "ESS") {
         _mint(msg.sender, INITIAL_SUPPLY);
     }
 
+// Change the amount of deposit for each store
     function changeDeposit(uint256 ndeposit) public onlyOwner{
         deposit=ndeposit;
     }
 
+// Mine the extra token
     function mint(uint256 amount) onlyOwner canMint public{
         uint256 amount2=amount*(10**uint256(DECIMALS));
         _mint(msg.sender,amount2);
     }
 
+// Burn the existing token
     function burn(uint256 amount) onlyOwner public {
         uint256 amount2=amount*(10**uint256(DECIMALS));
         _burn(msg.sender,amount2);
     }
 
+// Restrict the activity of mining
     modifier canMint() {
         require(!mintingFinished);
         _;
@@ -44,12 +48,14 @@ contract ESSToken is ERC20("Essential Shelf", "ESS") {
         _;
     }
 
+// Restrict the activity of mining
     function finishingMinting() onlyOwner canMint public returns (bool) {
         mintingFinished = true;
         emit MintFinished();
         return true;
     }
 
+// Create store registration on the platform
     function createStoreFactory(uint256 minimum) public returns(Store Store_address) {
         require(balanceOf(msg.sender)>=deposit*(10**uint256(DECIMALS)));
         uint256 _deposit=deposit*(10**uint256(DECIMALS));
@@ -58,6 +64,7 @@ contract ESSToken is ERC20("Essential Shelf", "ESS") {
         return new Store(minimum, msg.sender);
     }
 
+// Return the deposit amount of an user
     function getDeposit(address user) public view returns (uint256) {
         return deposit_amount[user];
     }
@@ -65,6 +72,8 @@ contract ESSToken is ERC20("Essential Shelf", "ESS") {
 }
 
 contract Store {
+
+// Info of store
     struct Request {
         string description;
         uint256 value;
